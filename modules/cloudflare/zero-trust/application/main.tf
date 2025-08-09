@@ -3,6 +3,8 @@ resource "cloudflare_zero_trust_access_application" "this" {
   domain = var.domain
   type   = var.type
 
+  account_id = var.account_id
+
   allowed_idps              = var.auth != null ? var.auth.allowed_idps : []
   auto_redirect_to_identity = var.auth != null ? var.auth.auto_redirect_to_identity : true
 

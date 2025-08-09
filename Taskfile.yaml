@@ -13,4 +13,6 @@ tasks:
   pr:create: gh pr create --assignee "@me" --base "main" -w
 
   pre-commit:install: pre-commit install
-  pre-commit:run: pre-commit run --all-files
+  pre-commit:run: pre-commit run --all-files --color always --show-diff-on-failure
+
+  tflint: tflint --recursive
