@@ -10,3 +10,7 @@ tasks:
 
   branch:new: better-branch
   commit: better-commits
+  pr:create: gh pr create --assignee "@me" --base "main" -w
+
+  pre-commit:install: pre-commit install
+  pre-commit:run: pre-commit run --all-files
