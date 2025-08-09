@@ -7,17 +7,16 @@ on:
       - main
       - master
     paths:
-      - '**/*.tpl'
-      - '**/*.py'
       - '**/*.tf'
-      - '.github/workflows/release.yml'
 
 jobs:
-  release:
-    name: Release
+  prepare:
+    name: Prepare matrix
     runs-on: ubuntu-latest
     # Skip running release workflow on forks
     if: github.repository_owner == 'WindKube'
+    outputs:
+        changed_modules: ${{ steps.changed-files.outputs.terraform_all_changed_files }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,7 +24,32 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Release
+      - name: Get changed Terraform files
+        id: changed-files
+        uses: tj-actions/changed-files@ed68ef82c095e0d48ec87eccea555d944a631a4c
+        with:
+          files_yaml_from_source_file: .github/changed-files.yml
+          dir_names: 'true'
+          matrix: 'true'
+
+  release:
+    name: Release
+    needs: prepare
+    runs-on: ubuntu-latest
+    # Skip running release workflow on forks and when there are no modules to release
+    if: github.repository_owner == 'WindKube'
+    strategy:
+      fail-fast: false
+      matrix:
+        module_dir: ${{ fromJSON(needs.prepare.outputs.changed_modules) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Release ${{ matrix.module_dir }}
         uses: cycjimmy/semantic-release-action@v4
         with:
           semantic_version: 23.0.2
@@ -33,5 +57,6 @@ jobs:
             @semantic-release/changelog@6.0.3
             @semantic-release/git@10.0.1
             conventional-changelog-conventionalcommits@7.0.2
+          working_directory: ${{ matrix.module_dir }}
         env:
           GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_GITHUB_TOKEN }}
