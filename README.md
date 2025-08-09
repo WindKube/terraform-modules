@@ -1,2 +1,2 @@
-# terraform-modules
+# Terraform Modules
 Terraform Modules Repository
