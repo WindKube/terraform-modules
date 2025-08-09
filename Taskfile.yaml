@@ -1,0 +1,12 @@
+version: 3
+
+tasks:
+  better-commits:install:
+    desc: Install better commits
+    cmds:
+      - npm install -g better-commits
+    status:
+      - command -v better-commits
+
+  branch:new: better-branch
+  commit: better-commits
