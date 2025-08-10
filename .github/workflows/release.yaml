@@ -2,12 +2,12 @@ name: Release
 
 on:
   workflow_dispatch:
-#   push:
-#     branches:
-#       - main
-#       - master
-#     paths:
-#       - '**/*.tf'
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - '**/*.tf'
 
 jobs:
   prepare:
@@ -16,8 +16,7 @@ jobs:
     # Skip running release workflow on forks
     if: github.repository_owner == 'WindKube'
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-      has_modules: ${{ steps.set-matrix.outputs.has_modules }}
+        changed_modules: ${{ steps.changed-files.outputs.terraform_all_changed_files }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,54 +30,18 @@ jobs:
         with:
           files_yaml_from_source_file: .github/changed-files.yml
           dir_names: 'true'
-
-      - name: Build modules matrix
-        id: set-matrix
-        shell: bash
-        run: |
-          set -euo pipefail
-          # Collect unique module dirs that contain a .releaserc.json
-          declare -A uniq
-          changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
-          while IFS= read -r file; do
-            [ -z "$file" ] && continue
-            dir="$(dirname "$file")"
-            # Walk up until repository root
-            while [ "$dir" != "." ] && [ "$dir" != "/" ]; do
-              if [ -f "$dir/.releaserc.json" ]; then
-                uniq["$dir"]=1
-                break
-              fi
-              newdir="$(dirname "$dir")"
-              [ "$newdir" = "$dir" ] && break
-              dir="$newdir"
-            done
-          done < <(printf '%s\n' "$changed_files" | tr ' ' '\n')
-
-          # Build JSON include array
-          include='[]'
-          for d in "${!uniq[@]}"; do
-            include=$(jq -c --arg d "$d" '. + [{"module_dir": $d}]' <<<"$include")
-          done
-
-          if [ "$include" = "[]" ]; then
-            echo "No modules to release."
-            echo "matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
-            echo "has_modules=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "matrix={\"include\":$include}" >> "$GITHUB_OUTPUT"
-            echo "has_modules=true" >> "$GITHUB_OUTPUT"
-          fi
+          matrix: 'true'
 
   release:
     name: Release
     needs: prepare
     runs-on: ubuntu-latest
     # Skip running release workflow on forks and when there are no modules to release
-    if: github.repository_owner == 'WindKube' && needs.prepare.outputs.has_modules == 'true'
+    if: github.repository_owner == 'WindKube'
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+      matrix:
+        module_dir: ${{ fromJSON(needs.prepare.outputs.changed_modules) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
