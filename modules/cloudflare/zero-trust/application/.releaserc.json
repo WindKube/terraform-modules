@@ -21,13 +21,13 @@
         [
             "@semantic-release/changelog",
             {
-                "changelogFile": "modules/cloudflare/zero-trust/application/CHANGELOG.md"
+                "changelogFile": "./CHANGELOG.md"
             }
         ],
         [
             "@semantic-release/git",
             {
-                "assets": ["modules/cloudflare/zero-trust/application/CHANGELOG.md"]
+                "assets": ["./CHANGELOG.md"]
             }
         ],
         [
