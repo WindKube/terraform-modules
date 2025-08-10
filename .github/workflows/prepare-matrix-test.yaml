@@ -1,0 +1,39 @@
+name: Matrix Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - '**/*.tf'
+
+jobs:
+  prepare:
+    name: Prepare matrix
+    runs-on: ubuntu-latest
+    # Skip running release workflow on forks
+    if: github.repository_owner == 'WindKube'
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      has_modules: ${{ steps.set-matrix.outputs.has_modules }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Get changed Terraform files
+        id: changed-files
+        uses: tj-actions/changed-files@ed68ef82c095e0d48ec87eccea555d944a631a4c
+        with:
+          files_yaml_from_source_file: .github/changed-files.yml
+          dir_names: 'true'
+          json: 'true'
+
+      - name: Show outputs
+        shell: bash
+        run: |
+          echo '${{ steps.changed-files.outputs }}'
