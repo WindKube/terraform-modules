@@ -38,4 +38,4 @@ jobs:
         env:
           ALL_CHANGED_FILES: ${{ toJson(steps.changed-files.outputs) }}
         run: |
-          echo '$ALL_CHANGED_FILES'
+          echo $ALL_CHANGED_FILES
