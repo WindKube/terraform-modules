@@ -16,7 +16,7 @@ jobs:
     # Skip running release workflow on forks
     if: github.repository_owner == 'WindKube'
     outputs:
-      changed_files: ${{ toJson(steps.set-matrix.terraform_all_changed_files) }}
+      changed_files: ${{ steps.changed-files.outputs.terraform_all_changed_files }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
