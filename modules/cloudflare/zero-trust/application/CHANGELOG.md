@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/WindKube/terraform-modules/compare/cloudflare-zero-trust-application-1.0.1...cloudflare-zero-trust-application-1.0.2) (2025-08-10)
+
+
+### Bug Fixes
+
+* **ci:** correct release workflow ([afb58f8](https://github.com/WindKube/terraform-modules/commit/afb58f8d3051fdf3b9093256bff1993ced3a27c3))
+
 ## 1.0.0 (2025-08-09)
 
 
