@@ -46,7 +46,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        module_path: ${{ needs.prepare.outputs.changed_files }}
+        module_path: ${{ fromJson(needs.prepare.outputs.changed_files) }}
     steps:
       - run: |-
           echo "Running tests for module path: ${{ matrix.module_path }}"
