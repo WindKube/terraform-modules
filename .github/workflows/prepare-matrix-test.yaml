@@ -35,5 +35,7 @@ jobs:
 
       - name: Show outputs
         shell: bash
+        env:
+          ALL_CHANGED_FILES: ${{ toJson(steps.changed-files.outputs) }}
         run: |
-          echo '${{ steps.changed-files.outputs }}'
+          echo '$ALL_CHANGED_FILES'
