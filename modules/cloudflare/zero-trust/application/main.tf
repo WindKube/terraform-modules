@@ -27,3 +27,4 @@ resource "cloudflare_zero_trust_access_application" "this" {
 
   tags = var.tags
 }
+

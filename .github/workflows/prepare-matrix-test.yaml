@@ -16,8 +16,7 @@ jobs:
     # Skip running release workflow on forks
     if: github.repository_owner == 'WindKube'
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-      has_modules: ${{ steps.set-matrix.outputs.has_modules }}
+      changed_files: ${{ toJson(steps.set-matrix.terraform_all_changed_files) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,3 +38,15 @@ jobs:
           ALL_CHANGED_FILES: ${{ toJson(steps.changed-files.outputs) }}
         run: |
           echo $ALL_CHANGED_FILES
+
+  matrix:
+    name: Matrix
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module_path: ${{ fromJson(needs.prepare.outputs.changed_files) }}
+    steps:
+      - run: |-
+          echo "Running tests for module path: ${{ matrix.module_path }}"
