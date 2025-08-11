@@ -20,10 +20,10 @@ tasks:
   ci:clean-workflow-runs:
     desc: Clean up workflow runs
     vars:
-      WORKFLOW_RUNS: 
+      WORKFLOW_RUNS:
         sh: gh run list --limit 1000 --status="completed" --json "databaseId" --jq ".[] | select(.databaseId != null) | .databaseId"
     cmds:
-      - echo "$WORKFLOW_RUNS" # | xargs -r gh run delete 
+      - echo "$WORKFLOW_RUNS" # | xargs -r gh run delete
       - for:
           var: WORKFLOW_RUNS
         cmd: |
