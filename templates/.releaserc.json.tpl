@@ -1,0 +1,51 @@
+{
+    "branches": ["main"],
+    "tagFormat": "cloudflare-zero-trust-{{ .NAME }}-${version}",
+    "plugins": [
+        [
+            "@semantic-release/commit-analyzer",
+            {
+                "preset": "conventionalcommits",
+                "releaseRules": [],
+                "parserOpts": {
+                    "noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES"]
+                }
+            }
+        ],
+        [
+            "@semantic-release/release-notes-generator",
+            {
+                "preset": "conventionalcommits"
+            }
+        ],
+        [
+            "@semantic-release/changelog",
+            {
+                "changelogFile": "./CHANGELOG.md"
+            }
+        ],
+        [
+            "@semantic-release/git",
+            {
+                "assets": ["./CHANGELOG.md"]
+            }
+        ],
+        [
+            "@semantic-release/github",
+            {
+                "assets": [
+                    {
+                        "path": "modules/cloudflare/zero-trust/{{ .NAME }}/**",
+                        "label": "Terraform Module"
+                    }
+                ]
+            }
+        ]
+    ],
+    "analyzeCommits": {
+        "path": "@semantic-release/commit-analyzer",
+        "options": {
+            "path": "modules/cloudflare/zero-trust/{{ .NAME }}"
+        }
+    }
+}
